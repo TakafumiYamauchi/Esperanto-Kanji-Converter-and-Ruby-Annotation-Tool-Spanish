@@ -71,36 +71,31 @@ def load_replacements_lists(json_path: str) -> Tuple[List, List, List]:
 # page_title: ブラウザタブに表示されるタイトル
 # layout="wide" で横幅を広く使えるUIにする
 #=================================================================
-st.set_page_config(page_title="Herramienta de reemplazo de caracteres (kanji) en texto en esperanto", layout="wide")
+st.set_page_config(page_title="Esperanto文の文字列(漢字)置換ツール", layout="wide")
 
-# タイトル部分（GUI表示部分のみスペイン語に）
-st.title("Reemplazo de texto en esperanto por kanjis y/o anotaciones en HTML (versión ampliada)")
+# タイトル部分
+st.title("エスペラント文を漢字置換したり、HTML形式の訳ルビを振ったりする (拡張版)")
 st.write("---")
 
 #=================================================================
 # 1) JSONファイル (置換ルール) をロード
 #   (デフォルトを使うか、ユーザーがアップロードするかの選択)
 #=================================================================
-
-# ラジオボタンに format_func をつけるため、まず選択肢のリストを定義
-json_options = ["デフォルトを使用する", "アップロードする"]
-
 selected_option = st.radio(
-    "¿Cómo manejar el archivo JSON? (lectura del archivo JSON de reemplazo)",
-    json_options,
-    format_func=lambda x: "Usar valor predeterminado" if x == "デフォルトを使用する" else "Subir archivo"
+    "JSONファイルをどうしますか？ (置換用JSONファイルの読み込み)",
+    ("デフォルトを使用する", "アップロードする")
 )
 
 # Streamlit の折りたたみ (expander) でサンプルJSONのダウンロードを案内
-with st.expander("Descargar archivo JSON de ejemplo (para reemplazo)"):
+with st.expander("**サンプルJSON(置換用JSONファイル)**"):
     # サンプルファイルのパス
     json_file_path = './Appの运行に使用する各类文件/最终的な替换用リスト(列表)(合并3个JSON文件).json'
     # JSONファイルを読み込んでダウンロードボタンを生成
     with open(json_file_path, "rb") as file_json:
         btn_json = st.download_button(
-            label="Descargar el archivo JSON de ejemplo",
+            label="サンプルJSON(置換用JSONファイル)ダウンロード",
             data=file_json,
-            file_name="archivo_de_reemplazo_ejemplo.json",
+            file_name="置換用JSONファイル.json",
             mime="application/json"
         )
 
@@ -120,13 +115,13 @@ if selected_option == "デフォルトを使用する":
         (replacements_final_list,
          replacements_list_for_localized_string,
          replacements_list_for_2char) = load_replacements_lists(default_json_path)
-        st.success("Se ha cargado correctamente el JSON predeterminado.")
+        st.success("デフォルトJSONの読み込みに成功しました。")
     except Exception as e:
-        st.error(f"No se pudo cargar el JSON predeterminado: {e}")
+        st.error(f"JSONファイルの読み込みに失敗: {e}")
         st.stop()
 else:
     # ユーザーがファイルアップロードする場合
-    uploaded_file = st.file_uploader("Subir archivo JSON (en formato combinado con 3 listas).json", type="json")
+    uploaded_file = st.file_uploader("JSONファイルをアップロード (合并3个JSON文件).json 形式)", type="json")
     if uploaded_file is not None:
         try:
             combined_data = json.load(uploaded_file)
@@ -136,12 +131,12 @@ else:
                 "局部文字替换用のリスト(列表)型配列(replacements_list_for_localized_string)", [])
             replacements_list_for_2char = combined_data.get(
                 "二文字词根替换用のリスト(列表)型配列(replacements_list_for_2char)", [])
-            st.success("El archivo JSON se ha subido y cargado exitosamente.")
+            st.success("アップロードしたJSONの読み込みに成功しました。")
         except Exception as e:
-            st.error(f"No se pudo leer el archivo JSON subido: {e}")
+            st.error(f"アップロードJSONファイルの読み込みに失敗: {e}")
             st.stop()
     else:
-        st.warning("No se ha subido ningún archivo JSON. Se detiene el proceso.")
+        st.warning("JSONファイルがアップロードされていません。処理を停止します。")
         st.stop()
 
 #=================================================================
@@ -162,14 +157,13 @@ st.write("---")
 # 並列処理 (multiprocessing) を利用できるかどうかのスイッチと、
 # 同時プロセス数の選択
 #=================================================================
-st.header("Configuración avanzada (procesamiento en paralelo)")
-with st.expander("Abrir configuración de procesamiento en paralelo"):
+st.header("高度な設定 (並列処理)")
+with st.expander("並列処理についての設定を開く"):
     st.write("""
-    Aquí puede definir el número de procesos en paralelo a utilizar 
-    durante el reemplazo de caracteres (kanji).
+    ここでは、文字列(漢字)置換時に使用する並列処理のプロセス数を決めます。 
     """)
-    use_parallel = st.checkbox("Usar procesamiento en paralelo", value=False)
-    num_processes = st.number_input("Número de procesos simultáneos", min_value=2, max_value=4, value=4, step=1)
+    use_parallel = st.checkbox("並列処理を使う", value=False)
+    num_processes = st.number_input("同時プロセス数", min_value=2, max_value=4, value=4, step=1)
 
 st.write("---")
 
@@ -178,8 +172,8 @@ st.write("---")
 # (HTMLルビ形式・括弧形式・文字列のみ など)
 #=================================================================
 
-# 以下の辞書は内部ロジックで利用しているため、キーを変更すると壊れる可能性が高い。
-# -> そこで「format_func」でユーザーが見る名称だけをスペイン語にしている。
+
+# ユーザー向け選択肢（キー側を韓国語に変更 / 値側は機能維持のためそのまま）
 options = {
     'HTML格式_Ruby文字_大小调整': 'HTML格式_Ruby文字_大小调整',
     'HTML格式_Ruby文字_大小调整_汉字替换': 'HTML格式_Ruby文字_大小调整_汉字替换',
@@ -190,26 +184,11 @@ options = {
     '替换后文字列のみ(仅)保留(简单替换)': '替换后文字列のみ(仅)保留(简单替换)'
 }
 
-# ユーザーに見せるスペイン語ラベルを別途マッピング
-options_spanish_labels = {
-    'HTML格式_Ruby文字_大小调整': "Formato HTML con anotaciones (ruby) y ajuste de tamaño",
-    'HTML格式_Ruby文字_大小调整_汉字替换': "Formato HTML con anotaciones (ruby), ajuste de tamaño y reemplazo de kanji",
-    'HTML格式': "Formato HTML",
-    'HTML格式_汉字替换': "Formato HTML con reemplazo de kanji",
-    '括弧(号)格式': "Formato con paréntesis",
-    '括弧(号)格式_汉字替换': "Formato con paréntesis y reemplazo de kanji",
-    '替换后文字列のみ(仅)保留(简单替换)': "Sólo texto reemplazado (reemplazo simple)"
-}
-
+# 사용자에게 보여줄 옵션 목록 (라벨)은 위의 dict 키들을 사용
 display_options = list(options.keys())
-
-selected_display = st.selectbox(
-    "Seleccione el formato de salida (use el mismo que el definido en el archivo JSON de reemplazo):",
-    display_options,
-    format_func=lambda key: options_spanish_labels[key]
-)
-
+selected_display = st.selectbox("出力形式を選択(置換用JSONファイルを作成したときと同じ形式を選択):", display_options)
 format_type = options[selected_display]
+
 
 
 # フォーム外で、変数 processed_text を初期化しておく
@@ -218,26 +197,18 @@ processed_text = ""
 #=================================================================
 # 4) 入力テキストのソースを選択 (手動入力 or ファイルアップロード)
 #=================================================================
-
-# ラジオボタンの選択肢（同様に format_func で表示文字を変える）
-source_options = ["手動入力", "ファイルアップロード"]
-st.subheader("Fuente del texto de entrada")
-source_option = st.radio(
-    "¿Cómo desea obtener el texto de entrada?",
-    source_options,
-    format_func=lambda x: "Entrada manual" if x == "手動入力" else "Subir archivo"
-)
-
+st.subheader("入力テキストのソース")
+source_option = st.radio("入力テキストをどうしますか？", ("手動入力", "ファイルアップロード"))
 uploaded_text = ""
 
 # ファイルアップロードが選択された場合
 if source_option == "ファイルアップロード":
-    text_file = st.file_uploader("Subir un archivo de texto (codificación UTF-8)", type=["txt", "csv", "md"])
+    text_file = st.file_uploader("テキストファイルをアップロード (UTF-8)", type=["txt", "csv", "md"])
     if text_file is not None:
         uploaded_text = text_file.read().decode("utf-8", errors="replace")
-        st.info("El archivo de texto se ha cargado correctamente.")
+        st.info("ファイルを読み込みました。")
     else:
-        st.warning("No se ha subido ningún archivo de texto. Cambie a entrada manual o cargue un archivo.")
+        st.warning("テキストファイルがアップロードされていません。手動入力に切り替えるかファイルをアップロードしてください。")
 
 #=================================================================
 # フォーム: 実行ボタン(送信/キャンセル)を配置
@@ -252,37 +223,30 @@ with st.form(key='profile_form'):
         # セッションステートから 'text0_value' を取得し、それがなければ空文字
         initial_text = st.session_state.get("text0_value", "")
 
-    # メインのテキストエリア（ラベルをスペイン語に）
+    # メインのテキストエリア
     text0 = st.text_area(
-        "Por favor ingrese aquí el texto en esperanto",
+        "エスペラントの文章を入力してください",
         height=150,
-        value=initial_text
+        value=initial_text  # セッションステートから読み込んだ初期値を使う
     )
 
-    # %...% と @...@ の使い方を説明した短文を出力 (ユーザー向け説明をスペイン語に)
-    st.markdown("""Al encerrar una parte de texto con el signo **%** (por ej.: `%<texto de hasta 50 caracteres>%`),
-    esa parte **no será reemplazada** y se mantendrá tal cual en el resultado final.""")
+    # %...% と @...@ の使い方を説明した短文を出力
+    st.markdown("""「%」で前後を囲む(「%<50文字以内の文字列>%」形式)と、
+    「%」で囲まれた部分は文字列(漢字)置換せず、元のまま保持することができます。""")
 
-    st.markdown("""Asimismo, al encerrar una parte de texto con el signo **@** (por ej.: `@<texto de hasta 18 caracteres>@`),
-    esa parte se reemplazará de forma **local** (limitada) dentro de ese fragmento.""")
+    st.markdown("""また、「@」で前後を囲む(「@<18文字以内の文字列>@」形式)と、
+    「@」で囲まれた部分を局所的に文字列(漢字)置換します。""")
 
     # 出力文字形式の選択 (エスペラント特有文字の表記形式)
-    letter_type = st.radio(
-        'Forma de mostrar los caracteres especiales de esperanto en el resultado',
-        ('上付き文字', 'x 形式', '^形式'),
-        format_func=lambda x: (
-            "Signo de acento sobre la letra (ĉ → c + ˆ)" if x == "上付き文字"
-            else ("Formato con x (ĉ → cx)" if x == "x 形式" else "Formato con ^ (ĉ → c^)")
-        )
-    )
+    letter_type = st.radio('出力文字形式', ('上付き文字', 'x 形式', '^形式'))
 
     # 送信ボタンとキャンセルボタンを並べる
-    submit_btn = st.form_submit_button('Enviar')
-    cancel_btn = st.form_submit_button("Cancelar")
+    submit_btn = st.form_submit_button('送信')
+    cancel_btn = st.form_submit_button("キャンセル")
 
     # キャンセルが押された時の処理
     if cancel_btn:
-        st.warning("Se canceló la operación.")
+        st.warning("キャンセルされました。")
         st.stop()  # ここで処理中断
 
     # 送信ボタンが押されたら
@@ -347,8 +311,8 @@ if processed_text:
         last_part = lines[-3:]
         preview_text = "\n".join(first_part) + "\n...\n" + "\n".join(last_part)
         st.warning(
-            f"El texto es muy extenso (total de líneas: {len(lines)}). "
-            "Se muestra una vista previa limitada (primeras 247 líneas y últimas 3 líneas)."
+            f"テキストが長いため（総行数 {len(lines)} 行）、"
+            "全文プレビューを一部省略しています。末尾3行も表示します。"
         )
     else:
         preview_text = processed_text
@@ -357,23 +321,23 @@ if processed_text:
     # 置換結果の表示。HTML形式の場合はプレビュータブとソースコードタブに分けて表示
     #=================================================================
     if "HTML" in format_type:
-        tab1, tab2 = st.tabs(["Vista previa en HTML", "Resultado (código HTML)"])
+        tab1, tab2 = st.tabs(["HTMLプレビュー", "置換結果（HTML ソースコード）"])
         with tab1:
             components.html(preview_text, height=500, scrolling=True)
         with tab2:
-            st.text_area("Código HTML generado:", preview_text, height=300)
+            st.text_area("", preview_text, height=300)
     else:
         # HTML以外 (括弧形式 など) の場合はテキストタブに表示
-        tab3_list = st.tabs(["Texto resultante"])
+        tab3_list = st.tabs(["置換結果テキスト"])
         with tab3_list[0]:
-            st.text_area("Resultado:", preview_text, height=300)
+            st.text_area("", preview_text, height=300)
 
     # ダウンロードボタン
     download_data = processed_text.encode('utf-8')
     st.download_button(
-        label="Descargar resultado",
+        label="置換結果のダウンロード",
         data=download_data,
-        file_name="resultado_reemplazo.html",
+        file_name="置換結果.html",
         mime="text/html"
     )
 
@@ -382,5 +346,5 @@ st.write("---")
 #=================================================================
 # ページ下部に、アプリのGitHubリポジトリのリンクを表示
 #=================================================================
-st.title("Repositorio de GitHub de la aplicación")
+st.title("アプリのGitHubリポジトリ")
 st.markdown("https://github.com/Takatakatake/Esperanto-Kanji-Converter-and-Ruby-Annotation-Tool-")
