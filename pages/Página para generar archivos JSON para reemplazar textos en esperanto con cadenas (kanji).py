@@ -1,13 +1,13 @@
-## エスペラント文(漢字)置換用のJSONファイル生成ページ.py(2つ目)
+## エスペラント文(汉字)置換用のJSONファイル生成ページ.py(2つ目)
 #############################
-# エスペラント文(漢字)置換用のJSONファイル生成ページ.py (Streamlit特有のpagesフォルダに入れるコード)
+# エスペラント文(汉字)置換用のJSONファイル生成ページ.py (Streamlit特有のpagesフォルダに入れるコード)
 #
 # 【概要】
-#  このページでは、「エスペラント文の漢字(スペイン語)置換」で使う
+#  このページでは、「エスペラント文の汉字(スペイン語)置換」で使う
 #  最終的な JSON ファイル(合并3個JSONファイル)を生成する機能を提供します。
 #
 # 【主な流れ】
-#  1) CSVファイルを取り込み(エスペラント語根→漢字/スペイン語訳の対応)
+#  1) CSVファイルを取り込み(エスペラント語根→汉字/スペイン語訳の対応)
 #  2) エスペラント単語の語根分解法などを記述したJSONファイルを取り込み
 #  3) 必要に応じて並列処理を設定
 #  4) ボタン押下で、「置換用の巨大JSON」を最終生成&ダウンロード可能
@@ -20,13 +20,13 @@
 #  - 最終的に「全域替换用のリスト」「局部文字替換用のリスト」「二文字词根替换用リスト」の3つを合并
 #  - ダウンロードボタンで JSONファイルとして取得
 #############################
-# エスペラント文(漢字)置換用のJSONファイル生成ページ.py (Streamlit特有のpagesフォルダに入れるコード)
+# エスペラント文(汉字)置換用のJSONファイル生成ページ.py (Streamlit特有のpagesフォルダに入れるコード)
 # こちらは「置換用JSONファイルを自分で作成したい」場合に利用するツールです。
 # main.pyで使う「置換用JSON(合并3個JSONファイル)」を生成するための処理がまとまっています。
 
 
 
-# エスペラント文(漢字)置換用のJSONファイル生成ページ.py (Streamlit特有のpagesフォルダに入れるコード)
+# エスペラント文(汉字)置換用のJSONファイル生成ページ.py (Streamlit特有のpagesフォルダに入れるコード)
 # こちらは「置換用JSONファイルを自分で作成したい」場合に利用するツールです。
 # (main.pyで使う「合并3個JSONファイル」形式の置換用JSONを生成するための処理をまとめています)
 
@@ -239,11 +239,11 @@ st.write("---")
 #=====================================================================
 options = {
     "HTML (con ajuste de tamaño de caracteres Ruby)": "HTML格式_Ruby文字_大小调整",
-    "HTML (con ajuste de tamaño de Ruby y sustitución de caracteres chinos)": "HTML格式_Ruby文字_大小调整_漢字替换",
+    "HTML (con ajuste de tamaño de Ruby y sustitución de caracteres chinos)": "HTML格式_Ruby文字_大小调整_汉字替换",
     "HTML (básico)": "HTML格式",
-    "HTML (con sustitución de caracteres chinos)": "HTML格式_漢字替换",
+    "HTML (con sustitución de caracteres chinos)": "HTML格式_汉字替换",
     "Formato con paréntesis": "括弧(号)格式",
-    "Formato con paréntesis (con sustitución de caracteres chinos)": "括弧(号)格式_漢字替换",
+    "Formato con paréntesis (con sustitución de caracteres chinos)": "括弧(号)格式_汉字替换",
     "Sustitución simple": "替换后文字列のみ(仅)保留(简单替换)"
 }
 
@@ -785,7 +785,7 @@ if st.button("Crear archivo JSON para la sustitución"):
 
         #-------------------------------------------------------------
         # (10) user_replacement_item_setting_list を適用
-        #      こちらはさらに細かい「特定の単語→独自の漢字表記」の設定など
+        #      こちらはさらに細かい「特定の単語→独自の汉字表記」の設定など
         #-------------------------------------------------------------
         if len(user_replacement_item_setting_list) > 0:
             # 同様に最初が4つでなければ説明行とみなし削除
@@ -979,7 +979,7 @@ if st.button("Crear archivo JSON para la sustitución"):
         )
 
         #-------------------------------------------------------------
-        # (15) 局所的な文字列(漢字)置換用のリストを作成
+        # (15) 局所的な文字列(汉字)置換用のリストを作成
         #      これは "%"や"@"で囲まれた部分だけ置換したいときに使う想定。
         #      CSV_data_imported にある(語根,訳)だけを対象とする。
         #-------------------------------------------------------------
